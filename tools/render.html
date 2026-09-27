@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Demonstrator render</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+// Deterministic shot renderer for the flight demonstrator. Frames must be
+// requested in order within a shot (rotors, heading and terrain integrate).
+import * as THREE from 'three';
+import { createStage } from '../js/stage.js';
+import { buildInterceptor, LAYOUT } from '../js/icpt.js';
+
+const canvas = document.getElementById('c');
+let S, D, W = 1920, H = 1080, alpha = false;
+let bgTex, orthoCam, floorMesh, sky, terrain, macro, tTex, mTex, streaks, route, fogAir, fogStudio;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const smooth = (a, b, t) => { const x = clamp((t - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const lerpV = (a, b, k) => a.map((v, i) => lerp(v, b[i], k));
+const TAU = Math.PI * 2;
+const FLOOR = LAYOUT.bottomY - 0.002;
+const AGL = 120, TILE = 111, SPEED = 18.5;           // m, m, m/s (~67 km/h)
+const HORIZON = new THREE.Color(0x2b3e5c);
+
+let seed = 11; const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+function gradientBackground() {
+  const cv = document.createElement('canvas'); cv.width = 1920; cv.height = 1080;
+  const c = cv.getContext('2d');
+  const g = c.createRadialGradient(960, 560, 40, 960, 560, 1150);
+  g.addColorStop(0, '#26303e'); g.addColorStop(0.45, '#0e1219'); g.addColorStop(1, '#000');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+// ---------------------------------------------------------------------
+// terrain: a seamless 111 m tile of small farm plots, roads and trees,
+// scrolled under the aircraft by texture offset
+// ---------------------------------------------------------------------
+function terrainTexture() {
+  // small farm plots from a wrap-around split, so tile edges cut through
+  // plots and the repeat does not read as a grid
+  const N = 2048, px = N / TILE, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const c = cv.getContext('2d');
+  const cols = ['#43492f', '#4d5434', '#565538', '#5f5a42', '#3d4530', '#525a3b', '#6a644c', '#48503a', '#5a5f41', '#666251', '#4d4938', '#3f4a33'];
+  c.fillStyle = '#3f3e32'; c.fillRect(0, 0, N, N);
+  const plots = [];
+  (function split(x, y, w, h, d) {
+    if ((w < 34 * px && h < 34 * px && rnd() < 0.5) || w < 10 * px || h < 10 * px || d > 8) { plots.push([x, y, w, h]); return; }
+    if (w > h) { const s2 = w * (0.3 + rnd() * 0.4); split(x, y, s2, h, d + 1); split(x + s2, y, w - s2, h, d + 1); }
+    else { const s2 = h * (0.3 + rnd() * 0.4); split(x, y, w, s2, d + 1); split(x, y + s2, w, h - s2, d + 1); }
+  })(0, 0, N, N, 0);
+  const sx = N * 0.37, sy = N * 0.61;
+  const wrap = (fn) => { for (const ox of [-N, 0]) for (const oy of [-N, 0]) fn(ox, oy); };
+  plots.forEach(([x, y, w, h]) => {
+    const col = cols[Math.floor(rnd() * cols.length)], rows = rnd() < 0.7, vert = rnd() < 0.5, step = 8 + rnd() * 8, dark = rnd() < 0.5, a = 0.04 + rnd() * 0.05;
+    wrap((ox, oy) => {
+      const X = ((x + sx) % N) + ox + (x + sx >= N ? 0 : 0), Y = ((y + sy) % N) + oy;
+      for (const [dx, dy] of [[0, 0], [N, 0], [0, N], [N, N]]) {
+        const px0 = X + dx, py0 = Y + dy;
+        if (px0 > N || py0 > N || px0 + w < 0 || py0 + h < 0) continue;
+        c.fillStyle = col; c.fillRect(px0 + 2.5, py0 + 2.5, w - 5, h - 5);
+        if (rows) {
+          c.save(); c.beginPath(); c.rect(px0 + 2.5, py0 + 2.5, w - 5, h - 5); c.clip();
+          c.strokeStyle = `rgba(${dark ? '0,0,0' : '255,255,230'},${a})`; c.lineWidth = 3;
+          if (vert) for (let xx = px0; xx < px0 + w; xx += step) { c.beginPath(); c.moveTo(xx, py0); c.lineTo(xx, py0 + h); c.stroke(); }
+          else for (let yy = py0; yy < py0 + h; yy += step) { c.beginPath(); c.moveTo(px0, yy); c.lineTo(px0 + w, yy); c.stroke(); }
+          c.restore();
+        }
+      }
+    });
+  });
+  // trees along some field boundaries (drawn with wrap so edges stay seamless)
+  const dot = (x, y, r, col) => { for (const ox of [-N, 0, N]) for (const oy of [-N, 0, N]) { c.fillStyle = col; c.beginPath(); c.arc(x + ox, y + oy, r, 0, TAU); c.fill(); } };
+  for (let i = 0; i < 170; i++) {
+    const p = plots[Math.floor(rnd() * plots.length)], onX = rnd() < 0.5;
+    const tx = ((onX ? p[0] + rnd() * p[2] : p[0] + (rnd() < 0.5 ? 0 : p[2])) + sx) % N;
+    const ty = ((onX ? p[1] + (rnd() < 0.5 ? 0 : p[3]) : p[1] + rnd() * p[3]) + sy) % N;
+    const r = (0.9 + rnd() * 1.4) * px;
+    dot(tx + r * 0.45, ty + r * 0.45, r, 'rgba(0,0,0,.22)');
+    dot(tx, ty, r, ['#243220', '#2a3a22', '#304126'][Math.floor(rnd() * 3)]);
+  }
+  // a few scattered farm buildings
+  for (let i = 0; i < 2; i++) {
+    const bx = rnd() * (N - 300) + 100, by = rnd() * (N - 300) + 100, bw = (5 + rnd() * 5) * px, bh = (4 + rnd() * 4) * px;
+    c.fillStyle = 'rgba(0,0,0,.25)'; c.fillRect(bx + 6, by + 6, bw, bh);
+    c.fillStyle = ['#7c786e', '#6f6b62'][i % 2]; c.fillRect(bx, by, bw, bh);
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 16;
+  return t;
+}
+function macroTexture() {
+  const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, N, N);
+  for (let i = 0; i < 90; i++) {
+    const x = rnd() * N, y = rnd() * N, r = 30 + rnd() * 110, v = Math.floor(205 + rnd() * 50);
+    for (const [ox, oy] of [[0, 0], [N, 0], [-N, 0], [0, N], [0, -N]]) {
+      const g = c.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r);
+      g.addColorStop(0, `rgba(${v},${v},${v},.8)`); g.addColorStop(1, `rgba(${v},${v},${v},0)`);
+      c.fillStyle = g; c.fillRect(x + ox - r, y + oy - r, r * 2, r * 2);
+    }
+  }
+  const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+function makeSky() {
+  const g = new THREE.SphereGeometry(6000, 48, 24);
+  const m = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false,
+    uniforms: { top: { value: new THREE.Color(0x03070f) }, hor: { value: HORIZON.clone() } },
+    vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader: 'uniform vec3 top, hor; varying vec3 vP;\nvoid main(){ float k = smoothstep(-0.02, 0.45, vP.y); gl_FragColor = vec4(mix(hor, top, k), 1.0);\n#include <colorspace_fragment>\n}' });
+  const s = new THREE.Mesh(g, m); s.renderOrder = -10; return s;
+}
+function makeStreaks() {
+  const N = 220, pos = new Float32Array(N * 6), seeds = [];
+  for (let i = 0; i < N; i++) seeds.push({ x: rnd() * 10 - 5, y: rnd() * 3 - 1.5, z: rnd() * 6 - 3, l: 0.3 + rnd() * 0.7 });
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const m = new THREE.LineBasicMaterial({ color: 0xdfe8f5, transparent: true, opacity: 0, depthWrite: false, fog: false });
+  const l = new THREE.LineSegments(g, m); l.frustumCulled = false; l.userData = { seeds, off: 0 };
+  return l;
+}
+function updateStreaks(k, dt, hd) {
+  const u = streaks.userData; u.off += SPEED * 0.55 * k * dt;
+  const p = streaks.geometry.attributes.position.array;
+  u.seeds.forEach((s, i) => { const x = ((s.x - u.off) % 10 + 10) % 10 - 5, L = s.l * (0.3 + k); p.set([x, s.y, s.z, x + L, s.y, s.z], i * 6); });
+  streaks.geometry.attributes.position.needsUpdate = true;
+  streaks.material.opacity = 0.14 * k; streaks.rotation.y = -hd;
+}
+function makeRoute() {
+  const grp = new THREE.Group();
+  const mat = new THREE.MeshBasicMaterial({ color: 0x78a6ee, transparent: true, opacity: 0.9, fog: false });
+  const pts = [[-160, 0], [-40, 0], [60, 0], [120, 104], [30, 190]].map(([x, z]) => new THREE.Vector3(x, 0, z));
+  const path = new THREE.CurvePath();
+  for (let i = 0; i < pts.length - 1; i++) path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
+  grp.add(new THREE.Mesh(new THREE.TubeGeometry(path, 400, 0.8, 8, false), mat));
+  const ringM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, fog: false });
+  pts.slice(2).forEach((p, i) => {
+    const r = new THREE.Mesh(new THREE.TorusGeometry(i === 0 ? 7.5 : 6, 0.7, 10, 64), ringM); r.rotation.x = Math.PI / 2; r.position.copy(p); grp.add(r);
+    const d = new THREE.Mesh(new THREE.CircleGeometry(2.2, 32), mat); d.rotation.x = -Math.PI / 2; d.position.copy(p).add(new THREE.Vector3(0, 0.1, 0)); grp.add(d);
+  });
+  const home = new THREE.Mesh(new THREE.TorusGeometry(9, 0.9, 10, 64), mat); home.rotation.x = Math.PI / 2; home.position.copy(pts[0]); grp.add(home);
+  grp.visible = false;
+  return grp;
+}
+
+// ---------------------------------------------------------------------
+// shots. state: world ('studio'|'air'), cam/tgt (drone-relative for air
+// shots when rel), fov, y, pitch, roll, hd (heading), lift, fpv, route
+// ---------------------------------------------------------------------
+const SHOTS = {
+  takeoff: { dur: 4.0, f: (t) => ({ world: 'studio', floor: true,
+    cam: lerpV([1.35, -0.02, 0.95], [1.5, 0.55, 1.05], smooth(0, 4, t)), tgt: lerpV([0, 0.02, 0], [0, 0.72, 0], smooth(0.9, 4, t)),
+    fov: 30, y: 0.03 + 0.85 * smooth(0.7, 4, t), lift: smooth(0, 0.6, t), pitch: 0, roll: 0.02 * Math.sin(t * 2) }) },
+  cruise: { dur: 4.2, f: (t) => ({ world: 'air', rel: true,
+    cam: lerpV([-0.15, 0.16, 1.0], [-0.95, 0.26, 0.7], smooth(0, 4.2, t)), tgt: [0.04, -0.03, 0], fov: 32,
+    pitch: -0.42, roll: 0.03 * Math.sin(t * 1.3), hd: 0, lift: 1, speed: 1 }) },
+  waypoint: { dur: 4.0, f: (t) => ({ world: 'air', rel: true, camYaw: true,
+    cam: lerpV([-1.7, 5.6, 0], [-1.1, 6.6, 0], smooth(0, 4, t)), tgt: [3.4, -10, 0], fov: 40, streak: 0,
+    pitch: -0.42 + 0.08 * smooth(3.4, 3.9, t), roll: -0.4 * smooth(3.45, 4.0, t), hd: (Math.PI / 3) * smooth(3.6, 5.0, t), lift: 1, speed: 1, route: 1, start: [-11, 0] }) },
+  fpv: { dur: 3.6, f: (t) => ({ world: 'air', fpv: true, fov: 72, pitch: -0.42, roll: 0.06 * Math.sin(t * 1.4), hd: 0.04 * Math.sin(t * 0.9), lift: 1, speed: 1, start: [300, 40] }) },
+  propulsion: { dur: 3.2, f: (t) => { const a = lerp(0.1, 1.0, smooth(0, 3.2, t)), c = LAYOUT.motors[0];
+    return { world: 'studio', cam: [c[0] + 0.36 * Math.cos(a), 0.14, c[2] + 0.36 * Math.sin(a)], tgt: [c[0] - 0.02, 0.01, c[2] - 0.03], fov: 32, y: 0, lift: 1, pitch: 0 }; } },
+  rth: { dur: 4.4, f: (t) => { const k = smooth(0.5, 3.6, t);
+    return { world: 'air', rel: true, camYaw: true, cam: lerpV([-1.3, 0.45, 1.1], [-1.4, 0.5, -1.0], smooth(0, 4.4, t)), tgt: [0.1, -0.05, 0], fov: 32,
+      pitch: -0.42 + 0.12 * Math.sin(Math.PI * k), roll: -0.6 * Math.sin(Math.PI * k), hd: Math.PI * k, lift: 1, speed: 1, start: [700, -60] }; } },
+  finale: { dur: 4.2, f: (t) => { const a = 0.7 + 0.5 * smooth(0, 4.2, t);
+    return { world: 'studio', cam: [1.3 * Math.cos(a), 0.36, 1.3 * Math.sin(a)], tgt: [-0.02, -0.01, 0], fov: 30, y: 0.012 * Math.sin(t * 1.7), lift: 1, pitch: 0, contact: true }; } },
+  // seamless loops
+  orbit: { dur: 10, f: (t) => { const a = 0.6 + TAU * t / 10;
+    return { world: 'studio', cam: [1.6 * Math.cos(a), 0.62, 1.6 * Math.sin(a)], tgt: [-0.02, -0.02, 0], fov: 30, y: 0, lift: 0, pitch: 0, contact: true }; } },
+  hoverloop: { dur: 6, f: (t) => { const a = 0.72 + 0.14 * Math.sin(TAU * t / 6);
+    return { world: 'studio', cam: [1.55 * Math.cos(a), 0.38 + 0.04 * Math.sin(TAU * t / 6), 1.55 * Math.sin(a)], tgt: [-0.02, 0, 0], fov: 30, y: 0.012 * Math.sin(TAU * t / 3), lift: 1, pitch: 0, roll: 0.015 * Math.sin(TAU * t / 6), contact: true }; } },
+  cruiseloop: { dur: 6, f: (t) => ({ world: 'air', rel: true, cam: [-0.7, 0.24, 0.85], tgt: [0.06, -0.03, 0], fov: 32, pitch: -0.42 + 0.01 * Math.sin(TAU * t / 3), roll: 0.03 * Math.sin(TAU * t / 6), hd: 0, lift: 1, speed: 1, start: [0, 0] }) },
+  fpvloop: { dur: 6, f: (t) => ({ world: 'air', fpv: true, fov: 72, pitch: -0.42, roll: 0.04 * Math.sin(TAU * t / 6), hd: 0, lift: 1, speed: 1, start: [300, 40] }) },
+  rotorloop: { dur: 4, f: () => { const c = LAYOUT.motors[0]; return { world: 'studio', cam: [c[0] + 0.32, 0.16, c[2] + 0.26], tgt: [c[0] - 0.02, 0.01, c[2] - 0.02], fov: 32, y: 0, lift: 1, pitch: 0 }; } },
+  // stills
+  hero:   { dur: 0, f: () => ({ world: 'studio', cam: [1.2, 0.95, 0.85], tgt: [-0.02, -0.02, 0], fov: 30, y: 0, lift: 0, contact: true }) },
+  hero2:  { dur: 0, f: () => ({ world: 'studio', cam: [1.3, 0.42, 1.02], tgt: [-0.02, -0.02, 0], fov: 30, y: 0, lift: 0, contact: true }) },
+  hover3q:{ dur: 0, f: () => ({ world: 'studio', cam: [1.3, 0.45, 1.0], tgt: [-0.02, 0, 0], fov: 30, y: 0, lift: 1, contact: true }) },
+  nose:   { dur: 0, f: () => ({ world: 'studio', cam: [0.62, 0.22, 0.2], tgt: [0.18, 0.02, 0], fov: 30, y: 0, lift: 0 }) },
+  under:  { dur: 0, f: () => ({ world: 'studio', cam: [0.9, -0.75, 0.75], tgt: [-0.02, -0.03, 0], fov: 32, y: 0, lift: 0 }) },
+  rear:   { dur: 0, f: () => ({ world: 'studio', cam: [-1.2, 0.55, 0.8], tgt: [-0.05, 0, 0], fov: 30, y: 0, lift: 0 }) },
+  cruisestill: { dur: 1.2, f: (t) => ({ world: 'air', rel: true, cam: [-0.7, 0.24, 0.85], tgt: [0.06, -0.03, 0], fov: 32, pitch: -0.42, roll: 0.02, hd: 0, lift: 1, speed: 1, start: [0, 0] }) },
+  waypointstill: { dur: 1.2, f: (t) => ({ world: 'air', rel: true, cam: [-1.4, 6.2, 0], tgt: [3.4, -10, 0], fov: 40, streak: 0, pitch: -0.42, roll: 0, hd: 0, lift: 1, speed: 1, route: 1, start: [18, 0] }) },
+  fpvstill: { dur: 1.2, f: (t) => ({ world: 'air', fpv: true, fov: 72, pitch: -0.42, roll: 0.02, hd: 0, lift: 1, speed: 1, start: [300, 40] }) },
+  // orthographic views for drawings
+  plan:  { dur: 0, ortho: 'top' },
+  side:  { dur: 0, ortho: 'side' },
+  front: { dur: 0, ortho: 'front' },
+};
+
+let shot = null, lastT = 0, off = [0, 0], hdPrev = 0;
+const qY = new THREE.Quaternion(), qZ = new THREE.Quaternion(), qX = new THREE.Quaternion();
+const AY = new THREE.Vector3(0, 1, 0), AZ = new THREE.Vector3(0, 0, 1), AX = new THREE.Vector3(1, 0, 0);
+function applyState(st, dt) {
+  const g = D.group, air = st.world === 'air';
+  const hd = st.hd || 0;
+  qY.setFromAxisAngle(AY, -hd); qZ.setFromAxisAngle(AZ, st.pitch || 0); qX.setFromAxisAngle(AX, st.roll || 0);
+  g.quaternion.copy(qY).multiply(qZ).multiply(qX);
+  g.position.set(0, st.y || 0, 0);
+  const SPIN = 62, M = D.materials;
+  D.parts.rotors.forEach((r) => {
+    r.speed = st.lift || 0; r.angle += r.dir * SPIN * r.speed * dt; r.prop.rotation.y = r.angle;
+    r.disc.material.opacity = clamp((r.speed - 0.25) / 0.5, 0, 1) * 0.7;
+    r.blades.forEach((b) => { b.material = r.speed > 0.6 ? M.bladeFade : M.blade; });
+  });
+  sky.visible = terrain.visible = macro.visible = air;
+  floorMesh.visible = !air && !!st.floor;
+  S.contact.visible = !air && !!st.contact;
+  S.key.castShadow = !air && !!st.floor;
+  route.visible = air && !!st.route;
+  S.camera.near = air ? 0.03 : 0.005;
+  if (air) {
+    S.scene.fog = fogAir; if (!alpha) S.scene.background = null;
+    const v = (st.speed || 0) * SPEED;
+    off[0] += v * Math.cos(hd) * dt; off[1] += v * Math.sin(hd) * dt;
+    tTex.offset.set(((off[0] / TILE) % 1 + 1) % 1, ((-off[1] / TILE) % 1 + 1) % 1);
+    mTex.offset.set(((off[0] / 1600) % 1 + 1) % 1, ((-off[1] / 1600) % 1 + 1) % 1);
+    route.position.set(-off[0], -AGL + 1.2, -off[1]);
+    updateStreaks((st.speed || 0) * (st.streak ?? 1), dt, hd);
+  } else {
+    S.scene.fog = fogStudio; if (!alpha) S.scene.background = bgTex; streaks.material.opacity = 0;
+  }
+  S.camera.fov = st.fov || 30;
+  if (st.fpv) {
+    g.updateMatrixWorld(true);
+    const eye = new THREE.Vector3(LAYOUT.XN + 0.02, 0.01, 0).applyMatrix4(g.matrixWorld);
+    const look = new THREE.Vector3(LAYOUT.XN + 5, 0.01, 0).applyMatrix4(g.matrixWorld);
+    S.camera.position.copy(eye); S.camera.up.set(0, 1, 0).applyQuaternion(g.quaternion); S.camera.lookAt(look);
+  } else if (st.rel) {
+    const q = st.camYaw ? new THREE.Quaternion().setFromAxisAngle(AY, -hd) : new THREE.Quaternion();
+    const cp = new THREE.Vector3(...st.cam).applyQuaternion(q).add(g.position), tp = new THREE.Vector3(...st.tgt).applyQuaternion(q).add(g.position);
+    S.camera.up.set(0, 1, 0); S.camera.position.copy(cp); S.camera.lookAt(tp);
+  } else {
+    S.camera.up.set(0, 1, 0); S.camera.position.set(...st.cam); S.camera.lookAt(...st.tgt);
+  }
+  S.camera.updateProjectionMatrix();
+}
+
+function setOrtho(kind) {
+  D.snap('parked'); D.group.position.set(0, 0, 0); D.group.quaternion.identity();
+  [sky, terrain, macro, route, floorMesh].forEach((o) => { o.visible = false; }); S.contact.visible = false; streaks.material.opacity = 0;
+  D.parts.rotors.forEach((r, i) => { r.prop.rotation.y = [0.3, -0.3, 0.9, -0.9][i]; });
+  const box = new THREE.Box3().setFromObject(D.group, true);
+  const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const aspect = W / H, pad = 1.05;
+  let w, h;
+  if (kind === 'top') { w = size.z; h = size.x; } else if (kind === 'side') { w = size.x; h = size.y; } else { w = size.z; h = size.y; }
+  let hw = (w * pad) / 2, hh = (h * pad) / 2;
+  if (hw / hh < aspect) hw = hh * aspect; else hh = hw / aspect;
+  orthoCam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.01, 20);
+  if (kind === 'top') { orthoCam.position.set(c.x, 6, c.z); orthoCam.up.set(1, 0, 0); }
+  else if (kind === 'side') orthoCam.position.set(c.x, c.y, 6);
+  else orthoCam.position.set(6, c.y, c.z);
+  orthoCam.lookAt(c); orthoCam.updateProjectionMatrix();
+}
+
+window.R = {
+  ready: false,
+  async init(cfg = {}) {
+    W = cfg.w || 1920; H = cfg.h || 1080; alpha = !!cfg.alpha;
+    canvas.width = W; canvas.height = H; canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    S = createStage(canvas, { alpha, capture: true, pixelRatio: cfg.pr || 1, envIntensity: cfg.env ?? 0.7, groundY: FLOOR, contactW: 0.9, contactD: 0.75, shadowExtent: 1.2, keyScale: 1 });
+    S.camera.near = 0.005; S.camera.far = 9000;
+    S.resize(W, H);
+    if (cfg.contact != null) S.contact.material.opacity = cfg.contact;
+    D = buildInterceptor(THREE); S.scene.add(D.group);
+    floorMesh = new THREE.Mesh(new THREE.CircleGeometry(12, 96), new THREE.MeshStandardMaterial({ color: 0x0d0f13, roughness: 0.9 }));
+    floorMesh.rotation.x = -Math.PI / 2; floorMesh.position.y = FLOOR; floorMesh.receiveShadow = true; floorMesh.visible = false; S.scene.add(floorMesh);
+    tTex = terrainTexture(); tTex.repeat.set(8000 / TILE, 8000 / TILE);
+    terrain = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), new THREE.MeshStandardMaterial({ map: tTex, color: 0x8a8a8a, roughness: 1, metalness: 0 }));
+    terrain.rotation.x = -Math.PI / 2; terrain.position.y = -AGL; S.scene.add(terrain);
+    mTex = macroTexture(); mTex.repeat.set(5, 5);
+    macro = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), new THREE.MeshBasicMaterial({ map: mTex, blending: THREE.MultiplyBlending, premultipliedAlpha: true, transparent: true, depthWrite: false, fog: false }));
+    macro.rotation.x = -Math.PI / 2; macro.position.y = -AGL + 0.2; macro.renderOrder = 1; S.scene.add(macro);
+    sky = makeSky(); S.scene.add(sky);
+    streaks = makeStreaks(); S.scene.add(streaks);
+    route = makeRoute(); S.scene.add(route);
+    fogAir = new THREE.FogExp2(HORIZON.getHex(), 0.00125); fogStudio = new THREE.Fog(0x000000, 4, 12);
+    if (!alpha) { bgTex = gradientBackground(); S.scene.background = bgTex; }
+    return { w: W, h: H };
+  },
+  shot(name) {
+    shot = SHOTS[name]; lastT = 0;
+    D.parts.rotors.forEach((r, i) => { r.angle = i * 0.8 + 0.2; });
+    if (shot.ortho) { setOrtho(shot.ortho); return 0; }
+    const s0 = shot.f(0); off = (s0.start || [0, 0]).slice();
+    streaks.userData.off = 0;
+    return shot.dur;
+  },
+  at(t, type = 'image/jpeg', q = 0.93) {
+    const dt = shot.dur ? Math.max(0, t - lastT) : 0;
+    if (shot.ortho) S.renderer.render(S.scene, orthoCam);
+    else {
+      const steps = Math.max(1, Math.round(dt * 60));
+      for (let s = 1; s <= steps; s++) applyState(shot.f(lastT + (dt * s) / steps), dt / steps);
+      if (!dt) applyState(shot.f(t), 0);
+      S.render();
+    }
+    lastT = t;
+    return canvas.toDataURL(type, q);
+  },
+  shots: Object.keys(SHOTS),
+  project(points) {
+    const box = new THREE.Box3().setFromObject(D.group, true);
+    const cam = orthoCam; cam.updateMatrixWorld();
+    const cs = [];
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) cs.push(new THREE.Vector3(x, y, z).project(cam));
+    const xs = cs.map((c) => c.x), ys = cs.map((c) => c.y);
+    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+    return points.map(([x, y, z]) => { const p = new THREE.Vector3(x, y, z).project(cam); return [+(((p.x - x0) / (x1 - x0)) * 100).toFixed(2), +(((y1 - p.y) / (y1 - y0)) * 100).toFixed(2)]; });
+  },
+};
+window.R.ready = true;
+</script>
+</body>
+</html>
