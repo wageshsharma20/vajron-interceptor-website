@@ -4,8 +4,8 @@
 // page (touch-action: pan-y), so it behaves on iPad. Renders only while
 // on screen and the page is visible; the static render stays if WebGL is
 // unavailable.
-// Modes: parked (props still), hover (rotors spinning, gentle bob),
-// cruise (rotors spinning, nose pitched down as in fast forward flight).
+// Modes: parked (standing on its tail, props still), hover (nose-up,
+// rotors spinning), cruise (pitched over, nose-first, as in fast flight).
 // =====================================================================
 import * as THREE from 'three';
 import { createStage } from './stage.js';
@@ -16,31 +16,31 @@ export function mountViewer(canvas, opt = {}) {
   let S;
   try {
     S = createStage(canvas, { alpha: true, shadows: false, envIntensity: opt.env ?? 0.72, pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      groundY: LAYOUT.bottomY - 0.06, contactW: 0.95, contactD: 0.8 });
+      groundY: LAYOUT.tailY - 0.004, contactW: 0.9, contactD: 0.9 });
   } catch (e) { return null; }
   if (!S.renderer.getContext()) return null;
   S.contact.material.opacity = opt.contact ?? 0.5;
 
   const D = buildInterceptor(THREE);
   const pivot = new THREE.Group(), tilt = new THREE.Group();
-  D.group.position.x = 0.03;                 // visual centre onto the pivot
   tilt.add(D.group); pivot.add(tilt);
   S.scene.add(pivot);
   let mode = opt.mode || 'parked';
   D.snap(mode === 'parked' ? 'parked' : 'flight');
 
   let yaw = opt.yaw ?? -0.7, vel = 0, dragging = false, lastX = 0, lastT = 0, idle = 0, moved = false;
-  const elev = opt.elev ?? 0.32, fov = opt.fov ?? 26, fit = opt.fit ?? 1.3;
-  let visible = false, raf = 0, clock = performance.now(), bob = 0, pitch = mode === 'cruise' ? -0.42 : 0;
+  const elev = opt.elev ?? 0.32, fov = opt.fov ?? 26, fit = opt.fit ?? 1.08;
+  const UP = Math.PI / 2, CRUISE = 0.22;
+  let visible = false, raf = 0, clock = performance.now(), bob = 0, pitch = mode === 'cruise' ? CRUISE : UP, lift = mode === 'parked' ? 0 : 1;
 
   function frameCamera() {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
     S.resize(w, h);
     S.camera.fov = fov;
     const vf = fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * (w / h));
-    const d = Math.max(0.36 / Math.tan(hf / 2), 0.2 / Math.tan(vf / 2)) * fit;
-    S.camera.position.set(0, d * Math.sin(elev), d * Math.cos(elev));
-    S.camera.lookAt(0, opt.lookY ?? -0.01, 0);
+    const d = Math.max(0.36 / Math.tan(hf / 2), 0.33 / Math.tan(vf / 2)) * fit;
+    S.camera.position.set(0, d * Math.sin(elev) + (opt.lookY ?? 0.02), d * Math.cos(elev));
+    S.camera.lookAt(0, opt.lookY ?? 0.02, 0);
     S.camera.updateProjectionMatrix();
   }
 
@@ -52,11 +52,13 @@ export function mountViewer(canvas, opt = {}) {
       else if (!reduce && opt.autoRotate !== false) { idle += dt; if (idle > 2.2) yaw += 0.16 * dt; }
     }
     pivot.rotation.y = yaw;
-    const tp = mode === 'cruise' ? -0.42 : 0;
-    pitch += (tp - pitch) * Math.min(1, dt * (reduce ? 20 : 2.2));
+    const tp = mode === 'cruise' ? CRUISE : UP;
+    pitch += (tp - pitch) * Math.min(1, dt * (reduce ? 20 : 1.8));
     tilt.rotation.z = pitch;
+    lift += ((mode === 'parked' ? 0 : 1) - lift) * Math.min(1, dt * (reduce ? 20 : 2));
     if (!reduce && mode !== 'parked') bob += dt;
-    pivot.position.y = mode === 'parked' ? pivot.position.y * 0.9 : Math.sin(bob * 1.3) * 0.006;
+    pivot.position.y = lift * (0.06 + Math.sin(bob * 1.3) * 0.006);
+    S.contact.material.opacity = (opt.contact ?? 0.5) * (1 - lift * 0.5);
     D.update(dt);
     S.render();
     if (!canvas.classList.contains('is-ready')) { canvas.classList.add('is-ready'); opt.onReady && opt.onReady(); }

@@ -1038,6 +1038,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .pfigs--2 dd{font-size:clamp(1.3rem,.85rem + 1vw,1.85rem)}
 .figs dd{font-size:clamp(1.4rem,.9rem + 1.1vw,1.9rem)}
 @media (max-width:639px){.pfigs--2{grid-template-columns:1fr}}
+/* the side view of the dart layout is nearly square: keep drawings at a readable size */
+.ga--wide .ga__img{max-width:min(100%,46rem);margin-inline:auto}
+.views figure img{width:auto;max-width:100%;max-height:24rem;margin:auto}
+.views{grid-template-columns:repeat(2,minmax(0,1fr))}
 </style>
 </head>
 <body>
@@ -1100,7 +1104,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <source type="image/webp" srcset="assets/photo/drone-700.webp 700w, assets/photo/drone-1100.webp 1100w, assets/photo/drone-1600.webp 1600w"
                     sizes="(orientation: portrait) 60vw, 34vw">
             <img src="assets/photo/drone-1100.png" width="1100" height="1357" fetchpriority="high" decoding="async"
-                 alt="The VAJRON high-speed flight demonstrator: a black aerodynamic body with a carbon-fibre rear section and fins, four arms with bullet-shaped motor pods and grey propellers.">
+                 alt="The VAJRON high-speed flight demonstrator standing on its tail: a long black aerodynamic body with a carbon-fibre rear section and fins, and four wings at the tail carrying bullet-shaped motor pods with grey propellers.">
           </picture>
         </div>
       </div>
@@ -1136,22 +1140,22 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="player__screen" id="film-player">
         <video class="player__video" muted playsinline loop preload="none" poster="assets/video/film-poster.jpg"
                data-src="assets/video/film-1920.mp4" data-src-small="assets/video/film-1280.mp4" data-autoplay
-               aria-label="Rendered film of the VAJRON flight demonstrator: vertical take-off, high-speed cruise over farmland, waypoint navigation, the onboard view, the propulsion, return-to-home and a studio view"></video>
+               aria-label="Rendered film of the VAJRON flight demonstrator: nose-up vertical take-off, nose-first cruise over farmland, waypoint navigation, the onboard view, the rear motors, return-to-home and the pitch-over from hover to forward flight"></video>
         <div class="player__shade" aria-hidden="true"></div>
         <div class="player__cap" aria-live="polite">
           <span class="player__num">00</span>
           <h3 class="player__name">Vertical take-off</h3>
-          <p class="player__fact">VTOL or hand-launch, with a thrust-to-weight ratio of about 3.3:1.</p>
+          <p class="player__fact">Nose-up vertical take-off on the four rear motors, or hand-launch. Thrust-to-weight about 3.3:1.</p>
         </div>
       </div>
       <ol class="chapters" aria-label="Film chapters" style="--n:7">
-        <li><button type="button" data-t="0" data-fact="VTOL or hand-launch, with a thrust-to-weight ratio of about 3.3:1."><span class="chapters__bar"><i></i></span><span class="chapters__num">00</span><span class="chapters__name">Vertical take-off</span></button></li>
+        <li><button type="button" data-t="0" data-fact="Nose-up vertical take-off on the four rear motors, or hand-launch. Thrust-to-weight about 3.3:1."><span class="chapters__bar"><i></i></span><span class="chapters__num">00</span><span class="chapters__name">Vertical take-off</span></button></li>
         <li><button type="button" data-t="3.5" data-fact="Demonstrated cruise at about 65&ndash;70 km/h, with about 24 minutes of endurance in cruise."><span class="chapters__bar"><i></i></span><span class="chapters__num">01</span><span class="chapters__name">High-speed cruise</span></button></li>
         <li><button type="button" data-t="7.2" data-fact="A GNSS and INAV flight stack flies autonomous waypoint missions."><span class="chapters__bar"><i></i></span><span class="chapters__num">02</span><span class="chapters__name">Waypoint navigation</span></button></li>
         <li><button type="button" data-t="10.7" data-fact="An HD FPV day camera gives a first-person view from the aircraft."><span class="chapters__bar"><i></i></span><span class="chapters__num">03</span><span class="chapters__name">Onboard view</span></button></li>
-        <li><button type="button" data-t="13.8" data-fact="Four 1900KV brushless motors, powered by a 4S2P 21700 Li-ion pack of 9,000 mAh."><span class="chapters__bar"><i></i></span><span class="chapters__num">04</span><span class="chapters__name">Propulsion</span></button></li>
+        <li><button type="button" data-t="13.8" data-fact="Four 1900KV brushless motors on the rear wings, powered by a 4S2P 21700 Li-ion pack of 9,000 mAh."><span class="chapters__bar"><i></i></span><span class="chapters__num">04</span><span class="chapters__name">Propulsion</span></button></li>
         <li><button type="button" data-t="16.5" data-fact="Return-to-home is built into the autonomous navigation stack."><span class="chapters__bar"><i></i></span><span class="chapters__num">05</span><span class="chapters__name">Return-to-home</span></button></li>
-        <li><button type="button" data-t="20.4" data-fact="The current build validates airframe, propulsion, power and autonomous navigation."><span class="chapters__bar"><i></i></span><span class="chapters__num">06</span><span class="chapters__name">Flight-proven base</span></button></li>
+        <li><button type="button" data-t="20.4" data-fact="From hover it pitches over into nose-first flight. The current build validates the core airframe, propulsion, power and navigation."><span class="chapters__bar"><i></i></span><span class="chapters__num">06</span><span class="chapters__name">Flight-proven base</span></button></li>
       </ol>
       <p class="player__note x-hide">Rendered film. Route overlay and terrain are illustrative. Tap a chapter to jump to it.</p>
     </div>
@@ -1188,13 +1192,13 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <div class="chapter__pin">
       <div class="chapter__title">
         <p class="eyebrow">Airframe</p>
-        <h2 id="af-title">A 7-inch quadrotor with an aerodynamic body</h2>
+        <h2 id="af-title">Four wings at the tail, built for speed</h2>
       </div>
       <div class="chapter__media">
         <video muted playsinline loop preload="none" poster="assets/video/orbit.jpg" data-src="assets/video/orbit-1920.mp4" data-autoplay
-               aria-label="The flight demonstrator turning slowly in a studio"></video>
+               aria-label="The flight demonstrator standing on its tail, turning slowly in a studio"></video>
       </div>
-      <p class="chapter__foot x-hide"><span>Quadrotor VTOL</span><span>Hand-launch</span><span>PETG composite</span><span>1&ndash;2 operators</span></p>
+      <p class="chapter__foot x-hide"><span>Quadrotor VTOL</span><span>Four rear wings</span><span>PETG composite</span><span>Hand-launch</span></p>
     </div>
   </div>
 
@@ -1203,21 +1207,21 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="modes">
         <div class="modes__view" data-reveal>
           <img src="assets/render/hero2-1200.png" srcset="assets/render/hero2-760.webp 760w, assets/render/hero2-1200.webp 1200w"
-               sizes="(orientation: portrait) 92vw, 55vw" width="1200" height="659" loading="lazy" decoding="async"
-               alt="Render of the VAJRON flight demonstrator.">
+               sizes="(orientation: portrait) 92vw, 55vw" width="1200" height="1137" loading="lazy" decoding="async"
+               alt="Render of the VAJRON flight demonstrator standing on its tail.">
           <canvas aria-label="Interactive 3D model of the aircraft showing the selected mode. Drag sideways to turn it." role="img"></canvas>
           <p class="modes__drag x-hide" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7 3 10l3 3M14 7l3 3-3 3M3 10h14"/></svg>Drag to rotate</p>
         </div>
         <div data-reveal style="--i:1">
           <p class="eyebrow">Explore the aircraft</p>
-          <h2 class="h2s">Hover, cruise, and everything between</h2>
+          <h2 class="h2s">Takes off nose-up, flies nose-first</h2>
           <div class="seg" role="group" aria-label="View">
-            <button type="button" data-mode="parked" aria-pressed="true">Airframe</button>
+            <button type="button" data-mode="parked" aria-pressed="true">Standing</button>
             <button type="button" data-mode="hover" aria-pressed="false">Hover</button>
             <button type="button" data-mode="cruise" aria-pressed="false">Cruise</button>
           </div>
           <div class="mode-copy" data-copy="parked">
-            <p>A 7-inch quadrotor VTOL in PETG composite construction. Airframe and battery are rated from &minus;10&nbsp;&deg;C to +50&nbsp;&deg;C.</p>
+            <p>A 7-inch quadrotor in PETG composite construction. All four wings sit at the tail, each carrying a motor with its propeller facing the nose, a layout built for high-speed flight.</p>
             <dl class="trio">
               <div><dt>Brushless motors</dt><dd class="num">4<small>&times; 1900KV</small></dd></div>
               <div><dt>Propellers</dt><dd class="num">7&times;4<small>in</small></dd></div>
@@ -1225,7 +1229,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             </dl>
           </div>
           <div class="mode-copy" data-copy="hover" hidden>
-            <p>Four brushless motors lift the aircraft vertically, or it can be launched by hand. With a thrust-to-weight ratio of about 3.3:1 it stays stable in gusts to about 30&nbsp;km/h.</p>
+            <p>For vertical take-off it lifts nose-up on its four rear motors, or it can be launched by hand. With a thrust-to-weight ratio of about 3.3:1 it stays stable in gusts to about 30&nbsp;km/h.</p>
             <dl class="trio">
               <div><dt>Hover endurance, up to</dt><dd class="num">29<small>min</small></dd></div>
               <div><dt>Thrust-to-weight</dt><dd class="num">3.3<small>:1</small></dd></div>
@@ -1233,7 +1237,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             </dl>
           </div>
           <div class="mode-copy" data-copy="cruise" hidden>
-            <p>In forward flight the demonstrator has been flown at about 65&ndash;70&nbsp;km/h, with about 24 minutes of endurance and an operational radius of up to about 12&nbsp;km, link and airspace permitting.</p>
+            <p>It then pitches over and flies nose-first. The demonstrator has been flown at about 65&ndash;70&nbsp;km/h, with about 24 minutes of endurance and an operational radius of up to about 12&nbsp;km, link and airspace permitting.</p>
             <dl class="trio">
               <div><dt>Cruise, demonstrated</dt><dd class="num">65&ndash;70<small>km/h</small></dd></div>
               <div><dt>Cruise endurance</dt><dd class="num">24<small>min</small></dd></div>
@@ -1247,15 +1251,15 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <article class="tile" data-reveal>
           <div class="tile__media"><video muted playsinline loop preload="none" poster="assets/video/rotorloop.jpg" data-src="assets/video/rotorloop.mp4" data-autoplay aria-label="A motor pod and propeller spinning"></video></div>
           <div class="tile__body"><p class="tile__k">Propulsion</p><p class="tile__v">1900<small>KV brushless</small></p>
-            <p class="tile__d">Four brushless motors on a 7-inch quadrotor frame.</p></div>
+            <p class="tile__d">Four brushless motors at the tips of the rear wings.</p></div>
         </article>
         <article class="tile" data-reveal style="--i:1">
-          <div class="tile__media"><img src="assets/render/under-900.jpg" srcset="assets/render/under-900.jpg 900w, assets/render/under-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the demonstrator from below."></div>
+          <div class="tile__media"><img src="assets/render/under-900.jpg" srcset="assets/render/under-900.jpg 900w, assets/render/under-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the tail: the four rear wings and motor pods."></div>
           <div class="tile__body"><p class="tile__k">Power system</p><p class="tile__v">4S2P<small>21700 Li-ion</small></p>
             <p class="tile__d">A 9,000 mAh pack of 21700 lithium-ion cells.</p></div>
         </article>
         <article class="tile" data-reveal style="--i:2">
-          <div class="tile__media"><img src="assets/render/rear-900.jpg" srcset="assets/render/rear-900.jpg 900w, assets/render/rear-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the demonstrator from the rear, showing the fins and the carbon-fibre rear section."></div>
+          <div class="tile__media"><img src="assets/render/rear-900.jpg" srcset="assets/render/rear-900.jpg 900w, assets/render/rear-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the demonstrator from the rear, showing the X of rear wings, the fins and the carbon-fibre rear section."></div>
           <div class="tile__body"><p class="tile__k">Construction</p><p class="tile__v">PETG<small>composite</small></p>
             <p class="tile__d">Rated with its battery for &minus;10&nbsp;&deg;C to +50&nbsp;&deg;C.</p></div>
         </article>
@@ -1269,32 +1273,32 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <div class="wrap">
     <header class="head head--center" data-reveal>
       <p class="eyebrow">General arrangement</p>
-      <h2 id="ga-title">Airframe at a glance</h2>
+      <h2 id="ga-title">A dart layout: nose forward, wings at the tail</h2>
     </header>
     <div class="ga ga--wide">
       <figure class="ga__fig" data-reveal data-live>
         <div class="ga__img">
           <img src="assets/render/side-1000.png" srcset="assets/render/side-1000.webp 1000w, assets/render/side-1800.webp 1800w"
-               sizes="(max-width:1400px) 92vw, 80rem" width="1000" height="420" loading="lazy" decoding="async"
-               alt="Side view render of the flight demonstrator: aerodynamic body, motor pods with propellers, arms, and fins above and below the tail.">
-          <span class="pin" style="left:87.8%;top:32.3%;--i:0" aria-hidden="true">01</span>
-          <span class="pin" style="left:55.2%;top:40.9%;--i:1" aria-hidden="true">02</span>
-          <span class="pin" style="left:55.2%;top:58.3%;--i:2" aria-hidden="true">03</span>
-          <span class="pin" style="left:26.3%;top:10.7%;--i:3" aria-hidden="true">04</span>
+               sizes="(max-width:1400px) 92vw, 80rem" width="1000" height="784" loading="lazy" decoding="async"
+               alt="Side view render of the flight demonstrator, nose to the right: long aerodynamic body, four wings at the tail carrying motor pods with forward-facing propellers, and fins above and below the tail.">
+          <span class="pin" style="left:74.6%;top:36.6%;--i:0" aria-hidden="true">01</span>
+          <span class="pin" style="left:23.9%;top:21.6%;--i:1" aria-hidden="true">02</span>
+          <span class="pin" style="left:27.9%;top:32.6%;--i:2" aria-hidden="true">03</span>
+          <span class="pin" style="left:8.3%;top:26.6%;--i:3" aria-hidden="true">04</span>
         </div>
       </figure>
       <div data-reveal>
         <ol class="ga__legend">
           <li><button type="button" data-pin="0"><span class="n">01</span><span><h3>Aerodynamic body</h3><p>PETG composite construction, with a carbon-fibre rear section.</p></span></button></li>
-          <li><button type="button" data-pin="1"><span class="n">02</span><span><h3>Motors and propellers</h3><p>Four brushless 1900KV motors with 7-inch propellers.</p></span></button></li>
-          <li><button type="button" data-pin="2"><span class="n">03</span><span><h3>Arms</h3><p>Four arms in a quadrotor layout.</p></span></button></li>
+          <li><button type="button" data-pin="1"><span class="n">02</span><span><h3>Motors and propellers</h3><p>Four brushless 1900KV motors, 7-inch propellers facing the nose.</p></span></button></li>
+          <li><button type="button" data-pin="2"><span class="n">03</span><span><h3>Rear wings</h3><p>Four wings in an X at the tail carry the motor pods.</p></span></button></li>
           <li><button type="button" data-pin="3"><span class="n">04</span><span><h3>Tail fins</h3><p>Fixed fins above and below the rear of the body.</p></span></button></li>
         </ol>
       </div>
     </div>
     <div class="views">
-      <figure data-reveal><img src="assets/render/plan-1000.png" srcset="assets/render/plan-1000.webp 1000w, assets/render/plan-1800.webp 1800w" sizes="(orientation: portrait) 92vw, 36vw" width="1000" height="924" loading="lazy" decoding="async" alt="Plan view render of the demonstrator from above, nose at the top."><figcaption>Plan view, nose at the top</figcaption></figure>
-      <figure data-reveal style="--i:1"><img src="assets/render/front-1000.png" srcset="assets/render/front-1000.webp 1000w, assets/render/front-1800.webp 1800w" sizes="(orientation: portrait) 92vw, 54vw" width="1000" height="388" loading="lazy" decoding="async" alt="Front view render of the demonstrator."><figcaption>Front view</figcaption></figure>
+      <figure data-reveal><img src="assets/render/plan-1000.png" srcset="assets/render/plan-1000.webp 1000w, assets/render/plan-1800.webp 1800w" sizes="(orientation: portrait) 92vw, 36vw" width="1000" height="1202" loading="lazy" decoding="async" alt="Plan view render of the demonstrator from above, nose at the top, with the four wings at the tail."><figcaption>Plan view, nose at the top</figcaption></figure>
+      <figure data-reveal style="--i:1"><img src="assets/render/front-1000.png" srcset="assets/render/front-1000.webp 1000w, assets/render/front-1800.webp 1800w" sizes="(orientation: portrait) 92vw, 54vw" width="1000" height="941" loading="lazy" decoding="async" alt="Front view render looking along the body: the X of four rear wings with the propellers around the nose."><figcaption>Front view, along the body</figcaption></figure>
     </div>
     <p class="figcap x-hide">Renders of a 3D model made from the aircraft photograph, for reference. Not to scale.</p>
   </div>
@@ -1530,7 +1534,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg>
         Print or save as PDF</button>
     </div>
-    <figure class="print-only pr-fig"><img src="assets/render/side-1000.png" alt="" width="1000" height="420"></figure>
+    <figure class="print-only pr-fig"><img src="assets/render/side-1000.png" alt="" width="1000" height="784"></figure>
 
     <div class="ds" data-tabs>
       <div class="ds__tabs" role="tablist" aria-label="Specification groups">
