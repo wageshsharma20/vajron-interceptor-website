@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VAJRON Interceptor Testbed | High-Speed Autonomous Flight Demonstrator</title>
-<meta name="description" content="VAJRON high-speed autonomous flight demonstrator: a 7-inch quadrotor VTOL R&amp;D prototype with demonstrated cruise of about 65-70 km/h, GNSS + INAV autonomous waypoint navigation, and the testbed for a future interceptor-class variant.">
+<meta name="description" content="VAJRON Interceptor Testbed: a high-speed autonomous quadrotor VTOL with four rear wings, targeting a top speed of around 300 km/h. The R&amp;D base for a future interceptor-class variant.">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="VAJRON Demonstrator">
-<meta property="og:title" content="VAJRON Flight Demonstrator">
+<meta name="apple-mobile-web-app-title" content="VAJRON Testbed">
+<meta property="og:title" content="VAJRON Interceptor Testbed">
 <meta property="og:description" content="High-speed autonomous flight demonstrator and interceptor-variant testbed (R&amp;D prototype).">
 <meta property="og:image" content="assets/og-image.jpg">
 <meta property="og:type" content="website">
@@ -842,12 +842,39 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 :is(.light,.white) .head--center h2::after{margin-inline:auto}
 /* footer in deep navy */
 .foot{background:#06122A;color:#9DB0CC}
+/* ---------- v4: fewer template-style details ---------- */
+/* the product name in solid white rather than gradient text */
+.hero__title .brand{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#fff}
+/* no accent bar under section headings */
+:is(.light,.white) .head h2::after{content:none}
+/* chapter details as one plain caption line rather than pill chips */
+.chapter__foot{gap:0}
+html .chapter__foot span{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0;padding:.15rem .95rem;font-weight:600;color:rgba(255,255,255,.92);text-shadow:0 1px 14px rgba(0,0,0,.65)}
+html .chapter__foot span + span{box-shadow:inset 1px 0 0 rgba(255,255,255,.38)}
+/* short rule bullets rather than circled check marks */
+.ticks li{grid-template-columns:.95rem 1fr;gap:.7rem}
+html .ticks li::before{width:.75rem;height:2px;border-radius:2px;margin-top:.74em;background:rgba(255,255,255,.7)}
+html :is(.light,.white) .ticks li::before{background:var(--blue)}
+html .onreq .ticks li::before{background:#fff}
+/* icons on their own, without tinted tiles */
+html .ico.ico{width:auto;height:auto;background:none;border-radius:0;display:block;place-items:start;justify-items:start}
+html .ico.ico svg{width:1.75rem;height:1.75rem}
+html :is(.light,.white) .ico.ico,html .role .ico.ico{color:var(--blue)}
+/* interaction hint as plain text */
+.hero__hint{background:none}
+/* contact card with the email and phone row */
+.ct__card--4{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ct__card--4 > div:last-child{grid-column:1/-1}
+.ct__card a{color:#fff}
+@media (orientation:portrait) and (min-width:640px), (max-width:900px){.ct__card--4{grid-template-columns:repeat(2,minmax(0,1fr))}.ct__card--4 > div:nth-child(3){grid-column:1/-1}}
+@media (max-width:639px){.ct__card--4{grid-template-columns:1fr}}
+/* chapter titles never outgrow the space above the video */
+.chapter__title h2{font-size:min(clamp(2.2rem,1.1rem + 3vw,4.4rem),7svh)}
 /* THEME-V2-END */
 
 /* =====================================================================
    30 L SPRAYING DRONE ADDITIONS
    ===================================================================== */
-.hero__word{font-size:min(30vw,44svh)}
 .hero__pic img{filter:drop-shadow(0 34px 44px rgba(0,0,0,.6))}
 
 /* overview with the real photograph on white */
@@ -1103,7 +1130,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <source type="image/webp" srcset="assets/photo/drone-700.webp 700w, assets/photo/drone-1100.webp 1100w, assets/photo/drone-1600.webp 1600w"
                     sizes="(orientation: portrait) 60vw, 34vw">
             <img src="assets/photo/drone-1100.png" width="1100" height="1357" fetchpriority="high" decoding="async"
-                 alt="The VAJRON high-speed flight demonstrator standing on its tail: a long black aerodynamic body with a carbon-fibre rear section and fins, and four wings at the tail carrying bullet-shaped motor pods with grey propellers.">
+                 alt="The VAJRON Interceptor Testbed standing on its tail: a long black aerodynamic body with a carbon-fibre rear section and fins, and four wings at the tail carrying bullet-shaped motor pods with grey propellers.">
           </picture>
         </div>
       </div>
@@ -1112,17 +1139,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 </section>
 
 <!-- ============================ KEY FIGURES ============================= -->
-<section class="figs-strip" id="figures" aria-label="Demonstrated figures">
+<section class="figs-strip" id="figures" aria-label="Key figures">
   <div class="wrap">
-    <dl class="figs" aria-label="Demonstrated figures" data-reveal>
-      <div style="--i:0"><dt>Cruise speed, demonstrated</dt><dd class="num"><small class="pre">~</small>65&ndash;70<small>km/h</small></dd></div>
-      <div style="--i:1"><dt>Endurance in hover, up to</dt><dd class="num"><span data-count="29">29</span><small>min</small></dd></div>
-      <div style="--i:2"><dt>Endurance in cruise</dt><dd class="num"><small class="pre">~</small><span data-count="24">24</span><small>min</small></dd></div>
-      <div style="--i:3"><dt>Operational radius, up to</dt><dd class="num"><small class="pre">~</small><span data-count="12">12</span><small>km</small></dd></div>
-      <div style="--i:4"><dt>Thrust-to-weight</dt><dd class="num"><small class="pre">~</small><span data-count="3.3">3.3</span><small>:1</small></dd></div>
-      <div style="--i:5"><dt>Crew</dt><dd class="num">1&ndash;2<small>operators</small></dd></div>
+    <dl class="figs" aria-label="Key figures" data-reveal>
+      <div style="--i:0"><dt>Target top speed, in development</dt><dd class="num"><small class="pre">~</small><span data-count="300">300</span><small>km/h</small></dd></div>
+      <div style="--i:1"><dt>Flight time, class figure</dt><dd class="num"><small class="pre">~</small><span data-count="30">30</span><small>min</small></dd></div>
+      <div style="--i:2"><dt>Vertical take-off or hand-launch</dt><dd>VTOL</dd></div>
+      <div style="--i:3"><dt>Autonomous waypoint navigation</dt><dd>GNSS</dd></div>
+      <div style="--i:4"><dt>Day camera for a first-person view</dt><dd>HD</dd></div>
+      <div style="--i:5"><dt>Interceptor-variant testbed</dt><dd>R&amp;D</dd></div>
     </dl>
-    <p class="figs-note x-hide">Demonstrated figures from the current flight-test configuration. Operational radius depends on link and airspace.</p>
+    <p class="figs-note x-hide">Top speed is a program target for the next revision; flight time is a class figure. Specifications are subject to change.</p>
   </div>
 </section>
 
@@ -1139,20 +1166,20 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="player__screen" id="film-player">
         <video class="player__video" muted playsinline loop preload="none" poster="assets/video/film-poster.jpg"
                data-src="assets/video/film-1920.mp4" data-src-small="assets/video/film-1280.mp4" data-autoplay
-               aria-label="Rendered film of the VAJRON flight demonstrator: nose-up vertical take-off, nose-first cruise over farmland, waypoint navigation, the onboard view, the rear motors, return-to-home and the pitch-over from hover to forward flight"></video>
+               aria-label="Rendered film of the VAJRON Interceptor Testbed: nose-up vertical take-off, nose-first cruise over farmland, waypoint navigation, the onboard view, the rear motors, return-to-home and the pitch-over from hover to forward flight"></video>
         <div class="player__shade" aria-hidden="true"></div>
         <div class="player__cap" aria-live="polite">
           <span class="player__num">00</span>
           <h3 class="player__name">Vertical take-off</h3>
-          <p class="player__fact">Nose-up vertical take-off on the four rear motors, or hand-launch. Thrust-to-weight about 3.3:1.</p>
+          <p class="player__fact">Nose-up vertical take-off on the four rear motors, or hand-launch.</p>
         </div>
       </div>
       <ol class="chapters" aria-label="Film chapters" style="--n:7">
-        <li><button type="button" data-t="0" data-fact="Nose-up vertical take-off on the four rear motors, or hand-launch. Thrust-to-weight about 3.3:1."><span class="chapters__bar"><i></i></span><span class="chapters__num">00</span><span class="chapters__name">Vertical take-off</span></button></li>
-        <li><button type="button" data-t="3.5" data-fact="Demonstrated cruise at about 65&ndash;70 km/h, with about 24 minutes of endurance in cruise."><span class="chapters__bar"><i></i></span><span class="chapters__num">01</span><span class="chapters__name">High-speed cruise</span></button></li>
-        <li><button type="button" data-t="7.2" data-fact="A GNSS and INAV flight stack flies autonomous waypoint missions."><span class="chapters__bar"><i></i></span><span class="chapters__num">02</span><span class="chapters__name">Waypoint navigation</span></button></li>
+        <li><button type="button" data-t="0" data-fact="Nose-up vertical take-off on the four rear motors, or hand-launch."><span class="chapters__bar"><i></i></span><span class="chapters__num">00</span><span class="chapters__name">Vertical take-off</span></button></li>
+        <li><button type="button" data-t="3.5" data-fact="Nose-first, high-speed cruise. The program targets a top speed of around 300 km/h."><span class="chapters__bar"><i></i></span><span class="chapters__num">01</span><span class="chapters__name">High-speed cruise</span></button></li>
+        <li><button type="button" data-t="7.2" data-fact="A GNSS-based autonomous flight stack flies waypoint missions."><span class="chapters__bar"><i></i></span><span class="chapters__num">02</span><span class="chapters__name">Waypoint navigation</span></button></li>
         <li><button type="button" data-t="10.7" data-fact="An HD FPV day camera gives a first-person view from the aircraft."><span class="chapters__bar"><i></i></span><span class="chapters__num">03</span><span class="chapters__name">Onboard view</span></button></li>
-        <li><button type="button" data-t="13.8" data-fact="Four 1900KV brushless motors on the rear wings, powered by a 4S2P 21700 Li-ion pack of 9,000 mAh."><span class="chapters__bar"><i></i></span><span class="chapters__num">04</span><span class="chapters__name">Propulsion</span></button></li>
+        <li><button type="button" data-t="13.8" data-fact="Four brushless motors on the rear wings, powered by a rechargeable lithium-ion pack."><span class="chapters__bar"><i></i></span><span class="chapters__num">04</span><span class="chapters__name">Propulsion</span></button></li>
         <li><button type="button" data-t="16.5" data-fact="Return-to-home is built into the autonomous navigation stack."><span class="chapters__bar"><i></i></span><span class="chapters__num">05</span><span class="chapters__name">Return-to-home</span></button></li>
         <li><button type="button" data-t="20.4" data-fact="From hover it pitches over into nose-first flight. The current build validates the core airframe, propulsion, power and navigation."><span class="chapters__bar"><i></i></span><span class="chapters__num">06</span><span class="chapters__name">Flight-proven base</span></button></li>
       </ol>
@@ -1168,7 +1195,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <figure class="intro__photo" data-reveal>
         <img src="assets/photo/photo-white-1000.jpg" srcset="assets/photo/photo-white-1000.jpg 1000w, assets/photo/photo-white-1600.jpg 1600w"
              sizes="(orientation: portrait) 70vw, 40vw" width="1000" height="1234" loading="lazy" decoding="async"
-             alt="Photograph of the VAJRON flight demonstrator on a white background, seen from above.">
+             alt="Photograph of the VAJRON Interceptor Testbed on a white background, seen from above.">
         <figcaption>Photograph of the aircraft</figcaption>
       </figure>
       <div data-reveal style="--i:1">
@@ -1197,7 +1224,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <video muted playsinline loop preload="none" poster="assets/video/orbit.jpg" data-src="assets/video/orbit-1920.mp4" data-autoplay
                aria-label="The flight demonstrator standing on its tail, turning slowly in a studio"></video>
       </div>
-      <p class="chapter__foot x-hide"><span>Quadrotor VTOL</span><span>Four rear wings</span><span>PETG composite</span><span>Hand-launch</span></p>
+      <p class="chapter__foot x-hide"><span>Quadrotor VTOL</span><span>Four rear wings</span><span>Composite airframe</span><span>Hand-launch</span></p>
     </div>
   </div>
 
@@ -1207,7 +1234,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <div class="modes__view" data-reveal>
           <img src="assets/render/hero2-1200.png" srcset="assets/render/hero2-760.webp 760w, assets/render/hero2-1200.webp 1200w"
                sizes="(orientation: portrait) 92vw, 55vw" width="1200" height="1137" loading="lazy" decoding="async"
-               alt="Render of the VAJRON flight demonstrator standing on its tail.">
+               alt="Render of the VAJRON Interceptor Testbed standing on its tail.">
           <canvas aria-label="Interactive 3D model of the aircraft showing the selected mode. Drag sideways to turn it." role="img"></canvas>
           <p class="modes__drag x-hide" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7 3 10l3 3M14 7l3 3-3 3M3 10h14"/></svg>Drag to rotate</p>
         </div>
@@ -1220,27 +1247,27 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <button type="button" data-mode="cruise" aria-pressed="false">Cruise</button>
           </div>
           <div class="mode-copy" data-copy="parked">
-            <p>A 7-inch quadrotor in PETG composite construction. All four wings sit at the tail, each carrying a motor with its propeller facing the nose, a layout built for high-speed flight.</p>
+            <p>A compact quadrotor in composite construction. All four wings sit at the tail, each carrying a motor with its propeller facing the nose, a layout built for high-speed flight.</p>
             <dl class="trio">
-              <div><dt>Brushless motors</dt><dd class="num">4<small>&times; 1900KV</small></dd></div>
-              <div><dt>Propellers</dt><dd class="num">7&times;4<small>in</small></dd></div>
-              <div><dt>Battery</dt><dd class="num">9,000<small>mAh</small></dd></div>
+              <div><dt>Brushless motors</dt><dd class="num">4</dd></div>
+              <div><dt>Rear wings</dt><dd class="num">4</dd></div>
+              <div><dt>Launch</dt><dd class="word">VTOL or hand</dd></div>
             </dl>
           </div>
           <div class="mode-copy" data-copy="hover" hidden>
-            <p>For vertical take-off it lifts nose-up on its four rear motors, or it can be launched by hand. With a thrust-to-weight ratio of about 3.3:1 it stays stable in gusts to about 30&nbsp;km/h.</p>
+            <p>For vertical take-off it lifts nose-up on its four rear motors, or it can be launched by hand. A high thrust-to-weight ratio keeps it stable in gusty conditions.</p>
             <dl class="trio">
-              <div><dt>Hover endurance, up to</dt><dd class="num">29<small>min</small></dd></div>
-              <div><dt>Thrust-to-weight</dt><dd class="num">3.3<small>:1</small></dd></div>
-              <div><dt>Stable in gusts to</dt><dd class="num">30<small>km/h</small></dd></div>
+              <div><dt>Flight time, class</dt><dd class="num"><small class="pre">~</small>30<small>min</small></dd></div>
+              <div><dt>Thrust-to-weight</dt><dd class="word">High</dd></div>
+              <div><dt>In wind</dt><dd class="word">Gust-stable</dd></div>
             </dl>
           </div>
           <div class="mode-copy" data-copy="cruise" hidden>
-            <p>It then pitches over and flies nose-first. The demonstrator has been flown at about 65&ndash;70&nbsp;km/h, with about 24 minutes of endurance and an operational radius of up to about 12&nbsp;km, link and airspace permitting.</p>
+            <p>It then pitches over and flies nose-first. The program targets a top speed of around 300&nbsp;km/h, with a long operational radius, link and airspace permitting.</p>
             <dl class="trio">
-              <div><dt>Cruise, demonstrated</dt><dd class="num">65&ndash;70<small>km/h</small></dd></div>
-              <div><dt>Cruise endurance</dt><dd class="num">24<small>min</small></dd></div>
-              <div><dt>Radius, up to</dt><dd class="num">12<small>km</small></dd></div>
+              <div><dt>Target top speed</dt><dd class="num"><small class="pre">~</small>300<small>km/h</small></dd></div>
+              <div><dt>Operational radius</dt><dd class="word">Long range</dd></div>
+              <div><dt>Navigation</dt><dd class="word">Autonomous</dd></div>
             </dl>
           </div>
         </div>
@@ -1249,18 +1276,18 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="trio3" style="margin-top:clamp(3rem,6vw,5rem)">
         <article class="tile" data-reveal>
           <div class="tile__media"><video muted playsinline loop preload="none" poster="assets/video/rotorloop.jpg" data-src="assets/video/rotorloop.mp4" data-autoplay aria-label="A motor pod and propeller spinning"></video></div>
-          <div class="tile__body"><p class="tile__k">Propulsion</p><p class="tile__v">1900<small>KV brushless</small></p>
-            <p class="tile__d">Four brushless motors at the tips of the rear wings.</p></div>
+          <div class="tile__body"><p class="tile__k">Propulsion</p><p class="tile__v">4<small>brushless motors</small></p>
+            <p class="tile__d">Mounted at the tips of the four rear wings.</p></div>
         </article>
         <article class="tile" data-reveal style="--i:1">
           <div class="tile__media"><img src="assets/render/under-900.jpg" srcset="assets/render/under-900.jpg 900w, assets/render/under-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the tail: the four rear wings and motor pods."></div>
-          <div class="tile__body"><p class="tile__k">Power system</p><p class="tile__v">4S2P<small>21700 Li-ion</small></p>
-            <p class="tile__d">A 9,000 mAh pack of 21700 lithium-ion cells.</p></div>
+          <div class="tile__body"><p class="tile__k">Power system</p><p class="tile__v">Li-ion<small>rechargeable</small></p>
+            <p class="tile__d">A high-capacity lithium-ion battery pack.</p></div>
         </article>
         <article class="tile" data-reveal style="--i:2">
           <div class="tile__media"><img src="assets/render/rear-900.jpg" srcset="assets/render/rear-900.jpg 900w, assets/render/rear-1600.jpg 1600w" sizes="(orientation: portrait) 46vw, 30vw" width="900" height="506" loading="lazy" decoding="async" alt="Render of the demonstrator from the rear, showing the X of rear wings, the fins and the carbon-fibre rear section."></div>
-          <div class="tile__body"><p class="tile__k">Construction</p><p class="tile__v">PETG<small>composite</small></p>
-            <p class="tile__d">Rated with its battery for &minus;10&nbsp;&deg;C to +50&nbsp;&deg;C.</p></div>
+          <div class="tile__body"><p class="tile__k">Construction</p><p class="tile__v">Composite<small>airframe</small></p>
+            <p class="tile__d">Airframe and battery rated for a wide temperature range.</p></div>
         </article>
       </div>
     </div>
@@ -1288,8 +1315,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       </figure>
       <div data-reveal>
         <ol class="ga__legend">
-          <li><button type="button" data-pin="0"><span class="n">01</span><span><h3>Aerodynamic body</h3><p>PETG composite construction, with a carbon-fibre rear section.</p></span></button></li>
-          <li><button type="button" data-pin="1"><span class="n">02</span><span><h3>Motors and propellers</h3><p>Four brushless 1900KV motors, 7-inch propellers facing the nose.</p></span></button></li>
+          <li><button type="button" data-pin="0"><span class="n">01</span><span><h3>Aerodynamic body</h3><p>Composite construction, with a carbon-fibre rear section.</p></span></button></li>
+          <li><button type="button" data-pin="1"><span class="n">02</span><span><h3>Motors and propellers</h3><p>Four brushless motors, propellers facing the nose.</p></span></button></li>
           <li><button type="button" data-pin="2"><span class="n">03</span><span><h3>Rear wings</h3><p>Four wings in an X at the tail carry the motor pods.</p></span></button></li>
           <li><button type="button" data-pin="3"><span class="n">04</span><span><h3>Tail fins</h3><p>Fixed fins above and below the rear of the body.</p></span></button></li>
         </ol>
@@ -1309,13 +1336,13 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <div class="chapter__pin">
       <div class="chapter__title">
         <p class="eyebrow">Performance</p>
-        <h2 id="pf-title">Demonstrated high-speed flight</h2>
+        <h2 id="pf-title">Built for high-speed flight</h2>
       </div>
       <div class="chapter__media">
         <video muted playsinline loop preload="none" poster="assets/video/cruiseloop.jpg" data-src="assets/video/cruiseloop-1920.mp4" data-autoplay
                aria-label="The demonstrator in fast forward flight over farmland"></video>
       </div>
-      <p class="chapter__foot x-hide"><span>~65&ndash;70 km/h</span><span>Up to 29 min</span><span>Up to ~12 km radius</span><span>100&ndash;1,000 m AGL</span></p>
+      <p class="chapter__foot x-hide"><span>High-speed</span><span>Target ~300 km/h</span><span>~30 min class</span><span>Long range</span></p>
     </div>
   </div>
 
@@ -1324,63 +1351,53 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <header class="head head--center" data-reveal>
         <p class="eyebrow">Flight envelope</p>
         <h2>Where and how it flies</h2>
-        <p class="head__lede x-hide">Figures reflect the current flight-test configuration.</p>
+        <p class="head__lede x-hide">Class figures and program targets for the demonstrator.</p>
       </header>
 
       <figure class="dg" data-reveal data-live>
         <div class="dg__head"><h3>Operating envelope</h3><p>Schematic, not to scale</p></div>
         <svg viewBox="0 0 1000 440" role="img" aria-labelledby="oe-t oe-d" data-smil>
           <title id="oe-t">Operating envelope</title>
-          <desc id="oe-d">The demonstrator operates between 100 and 1,000 metres above ground level, out to an operational radius of up to about 12 kilometres from the operators, link and airspace permitting.</desc>
+          <desc id="oe-d">The demonstrator operates at low to medium altitude, out to a long operational radius from the operators, link and airspace permitting.</desc>
           <defs><linearGradient id="band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12386E" stop-opacity=".06"/><stop offset="1" stop-color="#12386E" stop-opacity=".2"/></linearGradient></defs>
           <g font-family="Manrope, sans-serif" font-size="21" fill="#424245">
             <rect x="130" y="70" width="800" height="250" rx="16" fill="url(#band)" stroke="#12386E" stroke-opacity=".35" stroke-dasharray="6 7"/>
             <line x1="90" y1="360" x2="960" y2="360" stroke="#8A7A66" stroke-width="3"/>
             <g stroke="#0A0A0B" stroke-width="2" fill="none"><path d="M100 70 V320 M92 70 H108 M92 320 H108"/></g>
-            <text x="112" y="62" fill="#0A0A0B" font-weight="800" font-size="22">1,000 m AGL</text>
-            <text x="112" y="346" fill="#0A0A0B" font-weight="800" font-size="22">100 m AGL</text>
+            <text x="112" y="62" fill="#0A0A0B" font-weight="800" font-size="22">Medium altitude</text>
+            <text x="112" y="346" fill="#0A0A0B" font-weight="800" font-size="22">Low altitude</text>
             <path id="oepath" d="M160 300 C 300 180 520 150 900 170" fill="none" stroke="#12386E" stroke-width="3" stroke-dasharray="3 12" stroke-linecap="round"/>
             <g><path d="M-12 -7 L14 0 L-12 7 L-7 0 Z" fill="#12386E"/><animateMotion dur="7s" repeatCount="indefinite" rotate="auto"><mpath href="#oepath"/></animateMotion></g>
             <g fill="#12386E"><rect x="136" y="356" width="44" height="8" rx="4"/></g>
-            <text x="158" y="392" text-anchor="middle" font-size="18" fill="#6E6E73">Operators, 1&ndash;2</text>
+            <text x="158" y="392" text-anchor="middle" font-size="18" fill="#6E6E73">Operators</text>
             <g stroke="#12386E" stroke-width="2" fill="none"><path d="M158 414 H930 M158 404 V424 M930 404 V424"/></g>
-            <text x="544" y="408" text-anchor="middle" fill="#12386E" font-weight="800" font-size="22">Operational radius up to ~12 km</text>
+            <text x="544" y="408" text-anchor="middle" fill="#12386E" font-weight="800" font-size="22">Long operational radius</text>
             <text x="544" y="436" text-anchor="middle" font-size="18" fill="#6E6E73">link and airspace permitting</text>
-            <text x="530" y="120" text-anchor="middle" fill="#0A0A0B" font-weight="800" font-size="24">Cruise ~65&ndash;70 km/h, demonstrated</text>
-            <text x="530" y="150" text-anchor="middle">GNSS + INAV autonomous waypoint navigation</text>
+            <text x="530" y="120" text-anchor="middle" fill="#0A0A0B" font-weight="800" font-size="24">High-speed flight &#183; target ~300 km/h</text>
+            <text x="530" y="150" text-anchor="middle">GNSS autonomous waypoint navigation</text>
           </g>
         </svg>
-        <figcaption>Illustrative. Altitude band and radius are the published figures; the flight path is schematic.</figcaption>
+        <figcaption>Illustrative and not to scale; the flight path is schematic.</figcaption>
       </figure>
 
       <div class="split" style="margin-top:1rem">
-        <figure class="dg" data-reveal>
-          <div class="dg__head"><h3>Endurance</h3><p>Demonstrated</p></div>
-          <svg viewBox="0 0 800 330" role="img" aria-labelledby="en-t en-d">
-            <title id="en-t">Endurance</title>
-            <desc id="en-d">Up to 29 minutes in hover and about 24 minutes in cruise.</desc>
-            <g font-family="Manrope, sans-serif" font-size="26" fill="#424245">
-              <g stroke="#E1E7F0" stroke-width="2"><path d="M20 262 V30 M200 262 V30 M380 262 V30 M560 262 V30 M740 262 V30"/></g>
-              <g fill="#6E6E73" font-size="22" text-anchor="middle"><text x="20" y="298">0</text><text x="200" y="298">10</text><text x="380" y="298">20</text><text x="560" y="298">30</text><text x="740" y="298">40</text></g>
-              <text x="760" y="298" font-size="22" fill="#6E6E73">min</text>
-              <text x="20" y="62" fill="#0A0A0B" font-weight="800">Hover</text>
-              <rect x="20" y="78" width="522" height="50" rx="14" fill="#12386E"/>
-              <text x="560" y="114" fill="#12386E" font-weight="800" font-size="30">up to 29 min</text>
-              <text x="20" y="180" fill="#0A0A0B" font-weight="800">Cruise</text>
-              <rect x="20" y="196" width="432" height="50" rx="14" fill="#7F9CC4"/>
-              <text x="470" y="232" fill="#12386E" font-weight="800" font-size="30">~24 min</text>
-            </g>
-          </svg>
-          <figcaption>4S2P 21700 Li-ion pack, 9,000 mAh.</figcaption>
-        </figure>
+        <div class="dg" data-reveal>
+          <div class="dg__head"><h3>Speed</h3><p>Program target</p></div>
+          <p class="spec__big">~300<small>km/h target top speed</small></p>
+          <p style="color:var(--ink-2);line-height:1.6">The current build is a high-speed flight demonstrator. The next propulsion and airframe revision targets a top speed of around 300&nbsp;km/h.</p>
+          <ul class="ticks" style="margin-top:1.2rem">
+            <li>Nose-first flight on four rear wings</li>
+            <li>Around half an hour of flight time per battery, class figure</li>
+          </ul>
+        </div>
         <div class="dg" data-reveal style="--i:1">
-          <div class="dg__head"><h3>Environment</h3><p>Demonstrated and rated</p></div>
-          <dl class="pfigs pfigs--2">
-            <div><dt>Operating altitude, above ground level</dt><dd class="num">100&ndash;1,000<small>m</small></dd></div>
-            <div><dt>Stable in gusts to about</dt><dd class="num">30<small>km/h</small></dd></div>
-            <div><dt>Operating temperature, airframe and battery rated</dt><dd class="num">&minus;10&ndash;50<small>&deg;C</small></dd></div>
-            <div><dt>Thrust-to-weight, about</dt><dd class="num">3.3<small>:1</small></dd></div>
-          </dl>
+          <div class="dg__head"><h3>Environment</h3><p>Class figures</p></div>
+          <ul class="ticks">
+            <li>Low- to medium-altitude operation</li>
+            <li>Stable in gusty conditions, with a high thrust-to-weight ratio</li>
+            <li>Airframe and battery rated for a wide temperature range</li>
+            <li>Long operational radius, link and airspace permitting</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -1399,7 +1416,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <video muted playsinline loop preload="none" poster="assets/video/fpvloop.jpg" data-src="assets/video/fpvloop-1920.mp4" data-autoplay
                aria-label="Forward view from the aircraft in fast flight over farmland"></video>
       </div>
-      <p class="chapter__foot x-hide"><span>GNSS + INAV</span><span>Waypoints</span><span>Return-to-home</span><span>HD FPV camera</span></p>
+      <p class="chapter__foot x-hide"><span>GNSS navigation</span><span>Waypoints</span><span>Return-to-home</span><span>HD FPV camera</span></p>
     </div>
   </div>
 
@@ -1408,8 +1425,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="four">
         <article class="card" data-reveal>
           <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
-          <h3>GNSS + INAV</h3>
-          <p>Satellite navigation with an INAV flight stack running the autonomous flight modes.</p>
+          <h3>GNSS navigation</h3>
+          <p>Satellite navigation with an autonomous flight stack running the waypoint and return modes.</p>
         </article>
         <article class="card" data-reveal style="--i:1">
           <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="18" r="2"/><circle cx="12" cy="7" r="2"/><circle cx="19" cy="15" r="2"/><path d="M6.4 16.4 10.6 8.7M13.5 8.4l4.2 5.1"/></svg></span>
@@ -1433,10 +1450,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
           <div class="dg__head"><h3>A waypoint mission</h3><p>Plan view, schematic</p></div>
           <svg viewBox="0 0 800 560" role="img" aria-labelledby="wp-t wp-d" data-smil>
             <title id="wp-t">Waypoint mission</title>
-            <desc id="wp-d">From the home point the aircraft flies autonomously through a series of waypoints and returns home, within an operational radius of up to about 12 kilometres.</desc>
+            <desc id="wp-d">From the home point the aircraft flies autonomously through a series of waypoints and returns home, within a long operational radius.</desc>
             <g font-family="Manrope, sans-serif" font-size="22" fill="#424245">
               <circle cx="170" cy="400" r="330" fill="none" stroke="#12386E" stroke-opacity=".3" stroke-width="2" stroke-dasharray="6 8"/>
-              <text x="470" y="150" fill="#12386E" font-size="18" font-weight="700">up to ~12 km</text>
+              <text x="470" y="150" fill="#12386E" font-size="18" font-weight="700">long range</text>
               <path id="wpr" d="M170 400 L300 200 L520 250 L600 420 L420 480" fill="none" stroke="#12386E" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
               <path d="M420 480 C330 510 240 470 170 400" fill="none" stroke="#12386E" stroke-width="3" stroke-dasharray="4 10" stroke-linecap="round"/>
               <g><path d="M-11 -7 L13 0 L-11 7 L-6 0 Z" fill="#0A0A0B"/><animateMotion dur="9s" repeatCount="indefinite" rotate="auto" path="M170 400 L300 200 L520 250 L600 420 L420 480 C330 510 240 470 170 400"/></g>
@@ -1462,7 +1479,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <h3>Ground segment</h3>
             <ul class="lock">
               <li><b>Ground control</b><span class="st st--go">Portable tablet</span></li>
-              <li><b>Crew</b><span class="st st--go">1&ndash;2 operators</span></li>
+              <li><b>Crew</b><span class="st st--go">One or two operators</span></li>
               <li><b>Launch</b><span class="st st--go">VTOL or hand</span></li>
             </ul>
           </div>
@@ -1481,14 +1498,14 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <p class="head__lede x-hide">Capabilities planned for integration in subsequent program phases.</p>
     </header>
     <ol class="inc">
-      <li data-reveal><span class="k">01</span><span class="tag">Planned</span><h3>Higher top-end velocity</h3><p>Propulsion and airframe revision targeting increased top-end velocity performance.</p></li>
-      <li data-reveal style="--i:1"><span class="k">02</span><span class="tag">Planned</span><h3>GPS-denied navigation</h3><p>Visual-inertial odometry and optical flow.</p></li>
-      <li data-reveal style="--i:2"><span class="k">03</span><span class="tag">Planned</span><h3>Night operations</h3><p>Low-light camera integration.</p></li>
-      <li data-reveal style="--i:3"><span class="k">04</span><span class="tag">Planned</span><h3>Thermal imaging</h3><p>Thermal imaging payload integration.</p></li>
-      <li data-reveal><span class="k">05</span><span class="tag">Planned</span><h3>Onboard edge AI</h3><p>Real-time detection, tracking and classification on the aircraft.</p></li>
-      <li data-reveal style="--i:1"><span class="k">06</span><span class="tag">Planned</span><h3>Swarm operations</h3><p>Coordinated multi-drone operations.</p></li>
-      <li data-reveal style="--i:2"><span class="k">07</span><span class="tag">Planned</span><h3>Expanded payload</h3><p>1&ndash;3 kg class, for mission-specific sensor and effector packages.</p></li>
-      <li data-reveal style="--i:3"><span class="k">08</span><span class="tag">Planned</span><h3>Secure datalink</h3><p>A secure, anti-jam digital datalink.</p></li>
+      <li data-reveal><span class="k">01</span><h3>Around 300 km/h top speed</h3><p>A propulsion and airframe revision targeting a top speed of around 300 km/h.</p></li>
+      <li data-reveal style="--i:1"><span class="k">02</span><h3>GPS-denied navigation</h3><p>Visual-inertial odometry and optical flow.</p></li>
+      <li data-reveal style="--i:2"><span class="k">03</span><h3>Night operations</h3><p>Low-light camera integration.</p></li>
+      <li data-reveal style="--i:3"><span class="k">04</span><h3>Thermal imaging</h3><p>Thermal imaging payload integration.</p></li>
+      <li data-reveal><span class="k">05</span><h3>Onboard edge AI</h3><p>Real-time detection, tracking and classification on the aircraft.</p></li>
+      <li data-reveal style="--i:1"><span class="k">06</span><h3>Swarm operations</h3><p>Coordinated multi-drone operations.</p></li>
+      <li data-reveal style="--i:2"><span class="k">07</span><h3>Expanded payload</h3><p>Greater capacity for mission-specific sensor and effector packages.</p></li>
+      <li data-reveal style="--i:3"><span class="k">08</span><h3>Secure datalink</h3><p>A secure, anti-jam digital datalink.</p></li>
     </ol>
     <p class="note">Design targets for subsequent revisions. They are not implemented on the current build.</p>
   </div>
@@ -1526,8 +1543,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <div class="ds-top" data-reveal>
       <header class="head">
         <p class="eyebrow">Technical specifications</p>
-        <h2 id="spec-title">Flight demonstrator datasheet</h2>
-        <p class="head__lede x-hide">High-speed autonomous flight demonstrator. Current demonstrated capabilities.</p>
+        <h2 id="spec-title">Interceptor Testbed datasheet</h2>
+        <p class="head__lede x-hide">High-speed autonomous flight demonstrator. Class figures and program targets.</p>
       </header>
       <button class="btn btn--ink" type="button" data-print>
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg>
@@ -1547,44 +1564,44 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         <section class="ds-group is-active" id="g1" role="tabpanel" aria-labelledby="t1">
           <h3><span>01</span>Airframe, propulsion and power</h3>
           <table>
-            <tr><th scope="row">Airframe</th><td>7-inch quadrotor VTOL, PETG composite construction</td></tr>
+            <tr><th scope="row">Airframe</th><td>Compact quadrotor VTOL with four rear wings, composite construction</td></tr>
             <tr><th scope="row">Take-off method</th><td>VTOL / hand-launch</td></tr>
-            <tr><th scope="row">Propulsion</th><td>4&times; brushless motors, <strong>1900KV</strong>, 7&times;4 dual-blade propellers</td></tr>
-            <tr><th scope="row">Power system</th><td>4S2P 21700 Li-ion, <strong class="num">9,000 mAh</strong></td></tr>
+            <tr><th scope="row">Propulsion</th><td>Four brushless electric motors</td></tr>
+            <tr><th scope="row">Power system</th><td>High-capacity rechargeable lithium-ion pack</td></tr>
           </table>
           <div class="ds-group__media"><video muted playsinline loop preload="none" poster="assets/video/orbit.jpg" data-src="assets/video/orbit.mp4" data-autoplay aria-hidden="true"></video></div>
         </section>
         <section class="ds-group" id="g2" role="tabpanel" aria-labelledby="t2">
           <h3><span>02</span>Performance and environment</h3>
           <table>
-            <tr><th scope="row">Endurance</th><td>Up to <strong class="num">29 min</strong> (hover) / ~<strong class="num">24 min</strong> (cruise)</td></tr>
-            <tr><th scope="row">Cruise speed</th><td>~<strong class="num">65&ndash;70 km/h</strong>, demonstrated</td></tr>
-            <tr><th scope="row">Operational radius</th><td>Up to ~12 km, link and airspace permitting</td></tr>
-            <tr><th scope="row">Operating altitude</th><td>100&ndash;1,000 m AGL</td></tr>
-            <tr><th scope="row">Operating temperature</th><td>&minus;10&nbsp;&deg;C to +50&nbsp;&deg;C (airframe and battery rated)</td></tr>
-            <tr><th scope="row">Wind tolerance</th><td>Stable in gusts to ~30 km/h (TWR ~3.3:1)</td></tr>
+            <tr><th scope="row">Top speed</th><td>Target of around <strong>300 km/h</strong>, for the next propulsion and airframe revision</td></tr>
+            <tr><th scope="row">Flight time</th><td>Around half an hour, class figure</td></tr>
+            <tr><th scope="row">Operational radius</th><td>Long range, link and airspace permitting</td></tr>
+            <tr><th scope="row">Operating altitude</th><td>Low to medium altitude</td></tr>
+            <tr><th scope="row">Operating temperature</th><td>Wide range, airframe and battery rated</td></tr>
+            <tr><th scope="row">Wind tolerance</th><td>Stable in gusty conditions; high thrust-to-weight ratio</td></tr>
           </table>
           <div class="ds-group__media"><video muted playsinline loop preload="none" poster="assets/video/cruiseloop.jpg" data-src="assets/video/cruiseloop.mp4" data-autoplay aria-hidden="true"></video></div>
         </section>
         <section class="ds-group" id="g3" role="tabpanel" aria-labelledby="t3">
           <h3><span>03</span>Navigation, vision and control</h3>
           <table>
-            <tr><th scope="row">Navigation</th><td>GNSS + INAV flight stack: autonomous waypoint navigation, return-to-home</td></tr>
+            <tr><th scope="row">Navigation</th><td>GNSS with an autonomous flight stack: waypoint navigation, return-to-home</td></tr>
             <tr><th scope="row">Vision</th><td>HD FPV day camera</td></tr>
             <tr><th scope="row">Ground control</th><td>Portable tablet controller</td></tr>
-            <tr><th scope="row">Crew requirement</th><td>1&ndash;2 operators</td></tr>
+            <tr><th scope="row">Crew requirement</th><td>One or two operators</td></tr>
           </table>
           <div class="ds-group__media"><video muted playsinline loop preload="none" poster="assets/video/fpvloop.jpg" data-src="assets/video/fpvloop.mp4" data-autoplay aria-hidden="true"></video></div>
         </section>
         <section class="ds-group" id="g4" role="tabpanel" aria-labelledby="t4">
           <h3><span>04</span>Future development roadmap</h3>
           <table>
-            <tr><th scope="row">Performance</th><td>Propulsion and airframe revision targeting increased top-end velocity performance</td></tr>
+            <tr><th scope="row">Performance</th><td>Propulsion and airframe revision targeting a top speed of around 300 km/h</td></tr>
             <tr><th scope="row">Navigation</th><td>GPS-denied navigation via visual-inertial odometry and optical flow</td></tr>
             <tr><th scope="row">Imaging</th><td>Low-light camera integration for night operations; thermal imaging payload integration</td></tr>
             <tr><th scope="row">Processing</th><td>Onboard edge AI for real-time detection, tracking and classification</td></tr>
             <tr><th scope="row">Operations</th><td>Coordinated multi-drone swarm operations</td></tr>
-            <tr><th scope="row">Payload</th><td>Expanded capacity (1&ndash;3 kg class) for mission-specific sensor and effector packages</td></tr>
+            <tr><th scope="row">Payload</th><td>Expanded capacity for mission-specific sensor and effector packages</td></tr>
             <tr><th scope="row">Datalink</th><td>Secure, anti-jam digital datalink</td></tr>
             <tr><th scope="row">Status</th><td>Design targets for subsequent revisions; not yet implemented on the current build</td></tr>
           </table>
@@ -1603,7 +1620,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         </section>
       </div>
     </div>
-    <div class="ds-foot"><span>VAJRON Global Tech Pvt. Ltd. &#183; Research and development prototype</span><span>Demonstrated figures reflect the current flight-test configuration.</span></div>
+    <div class="ds-foot"><span>VAJRON Global Tech Pvt. Ltd. &#183; Research and development prototype</span><span>Speed is a program target; other values are class figures.</span></div>
   </div>
 </section>
 
@@ -1628,10 +1645,11 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
         </picture>
       </div>
     </div>
-    <dl class="ct__card" data-reveal>
+    <dl class="ct__card ct__card--4" data-reveal>
       <div><dt>Manufacturer</dt><dd>VAJRON Global Tech Pvt. Ltd.</dd></div>
       <div><dt>Program</dt><dd>High-speed autonomous flight demonstrator</dd></div>
       <div><dt>Web</dt><dd><a href="https://www.vajronglobaltech.com" rel="noopener">www.vajronglobaltech.com</a></dd></div>
+      <div><dt>Email and phone</dt><dd><a href="mailto:info@vajronglobaltech.com">info@vajronglobaltech.com</a> &#183; <a href="tel:+919818805137">+91 98188 05137</a></dd></div>
     </dl>
   </div>
 </section>
